@@ -43,8 +43,4 @@ ci:	lint test ## Lint code then run tests
 
 .PHONY: up
 up: ## Run application
-## ...
-
-.PHONY: clear-db
-clear-db: ## Clear database
-## ...
+	$(VENV)/bin/uvicorn --reload --factory app:create_app
