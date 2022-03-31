@@ -44,3 +44,12 @@ ci:	lint test ## Lint code then run tests
 .PHONY: up
 up: ## Run application
 	$(VENV)/bin/uvicorn --reload --factory app:create_app
+
+.PHONY: recreate
+recreate: ## Recreate database
+	$(VENV)/bin/python -m app --recreate
+
+
+.PHONY: recreate-tst
+recreate-tst: ## Recreate testing database
+	$(VENV)/bin/python -m app --recreate --testing

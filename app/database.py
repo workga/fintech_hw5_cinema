@@ -21,15 +21,6 @@ def init_db(testing: bool = False) -> Engine:
     engine = create_engine(url)
     SessionLocal.configure(bind=engine)
 
-    # Import it here in order to avoid circular imports and create all tables correctly
-    from app.cinema.models import (  # noqa # pylint: disable=C0415 disable=W0611
-        Mark,
-        Movie,
-        Review,
-        User,
-    )
-
-    Base.metadata.create_all(bind=engine)
     return engine
 
 
@@ -45,3 +36,11 @@ def create_session(**kwargs: int) -> Session:
         raise
     finally:
         session.close()
+
+
+def recreate_db(testing: bool = False) -> None:
+    engine = init_db(testing)
+
+    Base.metadata.drop_all(bind=engine)
+    Base.metadata.create_all(bind=engine)
+    get_logger().info('Database recreated')
