@@ -1,43 +1,47 @@
-from typing import Optional
-from unicodedata import decimal
-from attr import validate
+from typing import Annotated, Any
 
 from pydantic import BaseModel, constr, validator
 
+
 # User
 class UserBase(BaseModel):
-    login: constr(min_length=1, max_length=50)
-    name: constr(min_length=1, max_length=50)
+    login: Annotated[str, constr(min_length=1, max_length=50)]
+    name: Annotated[str, constr(min_length=1, max_length=50)]
+
 
 class UserRead(UserBase):
     id: int
-    
+
     class Config:
         orm_mode = True
 
+
 class UserCreate(UserBase):
-    password: constr(min_length=1, max_length=50)
+    password: Annotated[str, constr(min_length=1, max_length=50)]
 
 
 # Movie
 class MovieBase(BaseModel):
-    title: constr(min_length=1, max_length=50)
+    title: Annotated[str, constr(min_length=1, max_length=50)]
     year: int
 
     @validator('year')
-    def year_in_interval(cls, v):
+    def year_in_interval(cls: Any, v: int) -> int:
         if v not in range(1900, 2100):
             raise ValueError('Year is incorrect')
         return v
 
+
 class MovieRead(MovieBase):
     id: int
-    
+
     class Config:
         orm_mode = True
 
+
 class MovieCreate(MovieBase):
     pass
+
 
 class MovieStats(MovieBase):
     id: int
@@ -47,11 +51,12 @@ class MovieStats(MovieBase):
     rating: float
 
     @validator('rating')
-    def round_rating(cls, v):
+    def round_rating(cls: Any, v: float) -> float:
         return round(v, 2)
 
     class Config:
         orm_mode = True
+
 
 # class MovieFilter(BaseModel):
 #     substring: Optional[str] = None
@@ -59,18 +64,18 @@ class MovieStats(MovieBase):
 #     top: Optional[int] = None
 
 
-
-
 # Review
 class ReviewBase(BaseModel):
-    text:constr(min_length=1)
+    text: Annotated[str, constr(min_length=1)]
+
 
 class ReviewRead(ReviewBase):
     user_id: int
     movie_id: int
-    
+
     class Config:
         orm_mode = True
+
 
 class ReviewCreate(ReviewBase):
     pass
@@ -81,17 +86,19 @@ class MarkBase(BaseModel):
     score: int
 
     @validator('score')
-    def score_in_interval(cls, v):
+    def score_in_interval(cls: Any, v: int) -> int:
         if v not in range(0, 11):
             raise ValueError('Score is incorrect')
         return v
 
+
 class MarkRead(MarkBase):
     user_id: int
     movie_id: int
-    
+
     class Config:
         orm_mode = True
+
 
 class MarkCreate(MarkBase):
     pass

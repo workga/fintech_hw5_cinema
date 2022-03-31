@@ -22,7 +22,7 @@ test: ## Runs pytest
 .PHONY: test-lf
 test-lf: ## Runs pytest (last failure)
 	$(VENV)/bin/pytest -v --lf tests
-
+	
 .PHONY: lint
 lint: ## Lint code
 	$(VENV)/bin/flake8 --jobs 4 --statistics --show-source $(CODE)

@@ -1,12 +1,11 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 
+from app.cinema.routes import router as cinema_router
 from app.database import init_db
 from app.logger import init_logger
 
-from app.cinema.routes import router as cinema_router
 
-
-def create_app(testing=False) -> FastAPI:
+def create_app(testing: bool = False) -> FastAPI:
     app = FastAPI()
 
     init_db(testing)

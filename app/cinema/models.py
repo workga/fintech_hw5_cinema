@@ -1,16 +1,15 @@
 from sqlalchemy import (
     CheckConstraint,
     Column,
+    Float,
     ForeignKey,
     Integer,
     PrimaryKeyConstraint,
     SmallInteger,
     String,
     Text,
-    Float
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.engine.row import Row
 
 from app.database import Base
 
@@ -50,7 +49,6 @@ class Movie(Base):
         CheckConstraint('title != ""'),
         CheckConstraint('year > 1900 and year < 2100'),
     )
-
 
     def __init__(self, title: str, year: int) -> None:
         self.title = title
