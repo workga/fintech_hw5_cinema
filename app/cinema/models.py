@@ -7,6 +7,7 @@ from sqlalchemy import (
     SmallInteger,
     String,
     Text,
+    Float
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.engine.row import Row
@@ -39,12 +40,17 @@ class Movie(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String(50), nullable=False)
-    year = Column(Integer)
+    year = Column(Integer, nullable=False)
+
+    reviews_count = Column(Integer, default=0, nullable=False)
+    marks_count = Column(Integer, default=0, nullable=False)
+    rating = Column(Float, default=0, nullable=False)
 
     __table_args__ = (
         CheckConstraint('title != ""'),
         CheckConstraint('year > 1900 and year < 2100'),
     )
+
 
     def __init__(self, title: str, year: int) -> None:
         self.title = title

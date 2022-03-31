@@ -1,8 +1,10 @@
-from typing import List
-from fastapi import APIRouter, Depends, Body
+from typing import List, Tuple, Optional
+from fastapi import APIRouter, Depends, Body, Query
 
 from app.cinema.auth import auth_user
+from app.cinema.pagination import Page, pagination
 from app.cinema.models import (
+    Movie,
     User
 )
 from app.cinema.schemas import (
@@ -10,6 +12,8 @@ from app.cinema.schemas import (
     UserCreate,
     MovieCreate,
     MovieRead,
+    # MovieFilter,
+    MovieStats,
     ReviewRead,
     ReviewCreate,
     MarkRead,
@@ -20,11 +24,10 @@ from app.cinema import cinema
 
 router = APIRouter()
 
-
 # /users
 @router.get("/users", dependencies=[Depends(auth_user)], response_model=List[UserRead])
-def list_users():
-    db_users = cinema.get_users()
+def list_users(page: Page = Depends(pagination)):
+    db_users = cinema.get_users(page=page)
 
     return db_users
 
@@ -36,26 +39,37 @@ def create_user(user: UserCreate):
 
 
 @router.get("/users/{user_id}/reviews", dependencies=[Depends(auth_user)], response_model=List[ReviewRead])
-def list_user_reviews(user_id: int):
-    db_reviews = cinema.get_reviews(user_id=user_id)
+def list_user_reviews(user_id: int, page: Page = Depends(pagination)):
+    db_reviews = cinema.get_reviews(page=page, user_id=user_id,)
 
     return db_reviews
 
 @router.get("/users/{user_id}/marks", dependencies=[Depends(auth_user)], response_model=List[MarkRead])
-def list_user_marks(user_id: int):
-    db_marks = cinema.get_marks(user_id=user_id)
+def list_user_marks(user_id: int, page: Page = Depends(pagination)):
+    db_marks = cinema.get_marks(page=page, user_id=user_id)
 
     return db_marks
 
 
 # /movies
 @router.get("/movies", dependencies=[Depends(auth_user)], response_model=List[MovieRead])
-def list_movies():
-    db_movies = cinema.get_movies()
+def list_movies(
+    substring: Optional[str] = Query(None),
+    year: Optional[int] = Query(None),
+    top: Optional[int] = Query(None),
+    page: Page = Depends(pagination)
+):
+    db_movies = cinema.get_movies(page=page, substring=substring, year=year, top=top)
 
     return db_movies
 
-# Replace it with admin panel later
+@router.get("/movies/{movie_id}/stats", dependencies=[Depends(auth_user)], response_model=MovieStats)
+def show_movie_stats(movie_id: int):
+    movie = cinema.get_movie_stats(movie_id=movie_id)
+
+    return movie
+
+
 @router.post("/movies", dependencies=[Depends(auth_user)], response_model=MovieRead)
 def create_movie(movie: MovieCreate = Body(...)):
     db_movie = cinema.create_movie(movie)
@@ -65,8 +79,8 @@ def create_movie(movie: MovieCreate = Body(...)):
 
 # /movies_reviews
 @router.get("/movies/{movie_id}/reviews", dependencies=[Depends(auth_user)], response_model=List[ReviewRead])
-def list_movie_reviews(movie_id: int):
-    db_reviews = cinema.get_reviews(movie_id=movie_id)
+def list_movie_reviews(movie_id: int, page: Page = Depends(pagination)):
+    db_reviews = cinema.get_reviews(page=page, movie_id=movie_id)
 
     return db_reviews
 
@@ -78,8 +92,8 @@ def create_movie_review(movie_id: int, review: ReviewCreate = Body(...), user: U
 
 # /movies_marks
 @router.get("/movies/{movie_id}/marks", dependencies=[Depends(auth_user)], response_model=List[MarkRead])
-def list_movie_marks(movie_id: int):
-    db_marks = cinema.get_marks(movie_id=movie_id)
+def list_movie_marks(movie_id: int, page: Page = Depends(pagination)):
+    db_marks = cinema.get_marks(page=page, movie_id=movie_id)
 
     return db_marks
 

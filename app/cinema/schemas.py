@@ -1,4 +1,6 @@
 from typing import Optional
+from unicodedata import decimal
+from attr import validate
 
 from pydantic import BaseModel, constr, validator
 
@@ -36,6 +38,27 @@ class MovieRead(MovieBase):
 
 class MovieCreate(MovieBase):
     pass
+
+class MovieStats(MovieBase):
+    id: int
+
+    reviews_count: int
+    marks_count: int
+    rating: float
+
+    @validator('rating')
+    def round_rating(cls, v):
+        return round(v, 2)
+
+    class Config:
+        orm_mode = True
+
+# class MovieFilter(BaseModel):
+#     substring: Optional[str] = None
+#     year: Optional[int] = None
+#     top: Optional[int] = None
+
+
 
 
 # Review

@@ -1,6 +1,8 @@
 from contextlib import contextmanager
+import pathlib
 
 from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
@@ -14,18 +16,14 @@ Base = declarative_base()
 SessionLocal = sessionmaker()
 
 
-def init_db(testing=False) -> None:
+def init_db(testing=False) -> Engine:
     url = DB_URL if not testing else DB_URL_TESTING
     engine = create_engine(url)
     SessionLocal.configure(bind=engine)
 
-    # import model here in order to create them correctly
     from app.cinema.models import Mark, Movie, Review, User #noqa
     Base.metadata.create_all(bind=engine)
-
-
-# def init_app(app: Flask) -> None:
-#     app.cli.add_command(clear_db_command)
+    return engine
 
 
 @contextmanager
@@ -41,18 +39,16 @@ def create_session(**kwargs: int) -> Session:
     finally:
         session.close()
 
+# def recreate_db(testing=False):
+#     engine = init_db(testing)
 
-# def clear_db() -> None:
+#     from app.cinema.models import Mark, Movie, Review, User #noqa
+#     Base.metadata.create_all(bind=engine)
+
 #     with create_session() as session:
 #         for table in reversed(Base.metadata.sorted_tables):
 #             session.execute(table.delete())
 #     get_logger().info('Database cleared')
 
-
-# @click.command('clear-db')
-# @with_appcontext
-# def clear_db_command() -> None:
-#     '''
-#     Clear database
-#     '''
-#     clear_db()
+#     Base.metadata.create_all(bind=engine)
+#     get_logger().info('Database created')
