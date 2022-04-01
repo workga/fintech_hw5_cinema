@@ -63,7 +63,7 @@ class Review(Base):
     text = Column(Text, nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint('user_id', 'movie_id'),
+        PrimaryKeyConstraint('user_id', 'movie_id', name='id'),
         CheckConstraint('text != ""'),
     )
 

@@ -3,6 +3,7 @@ from typing import Any, Callable, List, Optional, TypeVar, cast
 
 from fastapi import HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.engine.row import Row
 from sqlalchemy.sql import func
 
 from app.cinema.models import Mark, Movie, Review, User
@@ -27,6 +28,22 @@ def handle_db_exception(cinema_func: F) -> F:
     return cast(F, wrapper)
 
 
+def get_user(user_id: int) -> Row:
+    with create_session(expire_on_commit=False) as session:
+        db_user = session.execute(select(User).where(User.id == user_id)).one_or_none()
+        print(type(db_user))
+        return db_user
+
+
+def get_movie(movie_id: int) -> Row:
+    with create_session(expire_on_commit=False) as session:
+        db_movie = session.execute(
+            select(Movie).where(Movie.id == movie_id)
+        ).one_or_none()
+
+        return db_movie
+
+
 # Users
 @handle_db_exception
 def get_user_by_login(login: str) -> Optional[User]:
@@ -37,7 +54,14 @@ def get_user_by_login(login: str) -> Optional[User]:
 
 
 @handle_db_exception
-def get_users(page: Page) -> List[User]:
+def get_user_by_id(user_id: int) -> Optional[User]:
+    db_user = get_user(user_id)
+
+    return db_user.User if db_user else None
+
+
+@handle_db_exception
+def get_users(page: Page = Page()) -> List[User]:
     with create_session(expire_on_commit=False) as session:
         db_users = session.execute(paginated_stmt(select(User), page, User)).all()
 
@@ -61,7 +85,7 @@ def create_user(user: UserCreate) -> User:
 # Movies
 @handle_db_exception
 def get_movies(
-    page: Page,
+    page: Page = Page(),
     substring: Optional[str] = None,
     year: Optional[int] = None,
     top: Optional[int] = None,
@@ -75,7 +99,8 @@ def get_movies(
         if top is not None:
             stmt = stmt.order_by(Movie.rating).limit(top)
 
-        stmt = paginated_stmt(stmt, page, Movie)
+        if top is None or top > page.limit:
+            stmt = paginated_stmt(stmt, page, Movie)
 
         db_movies = session.execute(stmt).all()
 
@@ -84,15 +109,12 @@ def get_movies(
 
 @handle_db_exception
 def get_movie_stats(movie_id: int) -> Movie:
-    with create_session(expire_on_commit=False) as session:
-        db_movie = session.execute(
-            select(Movie).where(Movie.id == movie_id)
-        ).one_or_none()
+    db_movie = get_movie(movie_id)
 
-        if db_movie is None:
-            raise HTTPException(status_code=400, detail="Movie doesn't exist")
+    if db_movie is None:
+        raise HTTPException(status_code=400, detail="Movie doesn't exist")
 
-        return db_movie.Movie
+    return db_movie.Movie
 
 
 @handle_db_exception
@@ -117,13 +139,21 @@ def create_movie(movie: MovieCreate) -> Movie:
 # Reviews
 @handle_db_exception
 def get_reviews(
-    page: Page, user_id: Optional[int] = None, movie_id: Optional[int] = None
+    page: Page = Page(), user_id: Optional[int] = None, movie_id: Optional[int] = None
 ) -> List[Review]:
     with create_session(expire_on_commit=False) as session:
         stmt = select(Review)
+
         if user_id is not None:
+            if not get_user(user_id):
+                raise HTTPException(status_code=400, detail="User doesn't exist")
+
             stmt = stmt.where(Review.user_id == user_id)
+
         if movie_id is not None:
+            if not get_movie(movie_id):
+                raise HTTPException(status_code=400, detail="Movie doesn't exist")
+
             stmt = stmt.where(Review.movie_id == movie_id)
 
         stmt = paginated_stmt(stmt, page, Review)
@@ -136,16 +166,11 @@ def get_reviews(
 @handle_db_exception
 def create_review(user_id: int, movie_id: int, review: ReviewCreate) -> Review:
     with create_session(expire_on_commit=False) as session:
-        db_movie = session.execute(
-            select(Movie).where(Movie.id == movie_id)
-        ).one_or_none()
-
+        db_movie = get_movie(movie_id)
         if not db_movie:
             raise HTTPException(status_code=400, detail="Movie doesn't exist")
 
-        db_user = session.execute(select(User).where(User.id == user_id)).one_or_none()
-
-        if not db_user:
+        if not get_user(user_id):
             raise HTTPException(status_code=400, detail="User doesn't exist")
 
         db_review = session.execute(
@@ -167,13 +192,21 @@ def create_review(user_id: int, movie_id: int, review: ReviewCreate) -> Review:
 # Marks
 @handle_db_exception
 def get_marks(
-    page: Page, user_id: Optional[int] = None, movie_id: Optional[int] = None
+    page: Page = Page(), user_id: Optional[int] = None, movie_id: Optional[int] = None
 ) -> List[Mark]:
     with create_session(expire_on_commit=False) as session:
         stmt = select(Mark)
+
         if user_id is not None:
+            if not get_user(user_id):
+                raise HTTPException(status_code=400, detail="User doesn't exist")
+
             stmt = stmt.where(Mark.user_id == user_id)
+
         if movie_id is not None:
+            if not get_movie(movie_id):
+                raise HTTPException(status_code=400, detail="Movie doesn't exist")
+
             stmt = stmt.where(Mark.movie_id == movie_id)
 
         stmt = paginated_stmt(stmt, page, Mark)
@@ -185,16 +218,11 @@ def get_marks(
 @handle_db_exception
 def create_mark(user_id: int, movie_id: int, mark: MarkCreate) -> Mark:
     with create_session(expire_on_commit=False) as session:
-        db_movie = session.execute(
-            select(Movie).where(Movie.id == movie_id)
-        ).one_or_none()
-
+        db_movie = get_movie(movie_id)
         if not db_movie:
             raise HTTPException(status_code=400, detail="Movie doesn't exist")
 
-        db_user = session.execute(select(User).where(User.id == user_id)).one_or_none()
-
-        if not db_user:
+        if not get_user(user_id):
             raise HTTPException(status_code=400, detail="User doesn't exist")
 
         db_mark = session.execute(

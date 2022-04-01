@@ -1,12 +1,17 @@
-from typing import Annotated, Any
+from typing import Any
 
+# import orjson
 from pydantic import BaseModel, constr, validator
 
 
+class CinemaBaseModel(BaseModel):
+    pass
+
 # User
-class UserBase(BaseModel):
-    login: Annotated[str, constr(min_length=1, max_length=50)]
-    name: Annotated[str, constr(min_length=1, max_length=50)]
+class UserBase(CinemaBaseModel):
+    # Because mypy doesn't know about constr type
+    login: constr(min_length=1, max_length=50)  # type: ignore
+    name: constr(min_length=1, max_length=50)  # type: ignore
 
 
 class UserRead(UserBase):
@@ -17,12 +22,12 @@ class UserRead(UserBase):
 
 
 class UserCreate(UserBase):
-    password: Annotated[str, constr(min_length=1, max_length=50)]
+    password: constr(min_length=1, max_length=50)  # type: ignore
 
 
 # Movie
-class MovieBase(BaseModel):
-    title: Annotated[str, constr(min_length=1, max_length=50)]
+class MovieBase(CinemaBaseModel):
+    title: constr(min_length=1, max_length=50)  # type: ignore
     year: int
 
     @validator('year')
@@ -58,15 +63,9 @@ class MovieStats(MovieBase):
         orm_mode = True
 
 
-# class MovieFilter(BaseModel):
-#     substring: Optional[str] = None
-#     year: Optional[int] = None
-#     top: Optional[int] = None
-
-
 # Review
-class ReviewBase(BaseModel):
-    text: Annotated[str, constr(min_length=1)]
+class ReviewBase(CinemaBaseModel):
+    text: constr(min_length=1)  # type: ignore
 
 
 class ReviewRead(ReviewBase):
@@ -82,7 +81,7 @@ class ReviewCreate(ReviewBase):
 
 
 # Mark
-class MarkBase(BaseModel):
+class MarkBase(CinemaBaseModel):
     score: int
 
     @validator('score')

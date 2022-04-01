@@ -1,0 +1,105 @@
+{
+    "users": [
+        {
+            "name": "Annet",
+            "login": "annet",
+            "password": "annet"
+        },
+        {
+            "name": "Bella",
+            "login": "bella",
+            "password": "bella"
+        },
+        {
+            "name": "Clare",
+            "login": "clare",
+            "password": "clare"
+        },
+        {
+            "name": "Diana",
+            "login": "diana",
+            "password": "diana"
+        },
+        {
+            "name": "Elena",
+            "login": "elena",
+            "password": "elena"
+        }
+    ],
+    "movies": [
+        {
+            "title": "Mama",
+            "year": "2000"
+        },
+        {
+            "title": "Nana",
+            "year": "2001"
+        },
+        {
+            "title": "Obob",
+            "year": "2003"
+        },
+        {
+            "title": "Papa",
+            "year": "2004"
+        },
+        {
+            "title": "Ququ",
+            "year": "2005"
+        }
+    ],
+    "reviews": [
+        {   
+            "user_id": 1,
+            "movie_id": 1,
+            "text": "Amazing!"
+        },
+        {
+            "user_id": 2,
+            "movie_id": 2,
+            "text": "Boring!"
+        },
+        {
+            "user_id": 3,
+            "movie_id": 3,
+            "text": "Cool!"
+        },
+        {
+            "user_id": 4,
+            "movie_id": 4,
+            "text": "Deep!"
+        },
+        {
+            "user_id": 5,
+            "movie_id": 5,
+            "text": "Excellent!"
+        }
+    ],
+    "marks": [
+        {
+            "user_id": 1,
+            "movie_id": 1,
+            "score": 0
+        },
+        {
+            "user_id": 2,
+            "movie_id": 2,
+            "score": 1
+        },
+        {
+            "user_id": 3,
+            "movie_id": 3,
+            "score": 5
+        },
+        {
+            "user_id": 4,
+            "movie_id": 4,
+            "score": 9
+        },
+        {
+            "user_id": 5,
+            "movie_id": 5,
+            "score": 10
+        }
+    ]
+}
