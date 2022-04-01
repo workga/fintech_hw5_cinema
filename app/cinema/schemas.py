@@ -7,6 +7,7 @@ from pydantic import BaseModel, constr, validator
 class CinemaBaseModel(BaseModel):
     pass
 
+
 # User
 class UserBase(CinemaBaseModel):
     # Because mypy doesn't know about constr type
