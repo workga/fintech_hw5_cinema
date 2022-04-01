@@ -1,15 +1,16 @@
 # Cinema API
-...
-
+This is API that allows to create
 ### Features
-- ...
-- ...
+- Base authentication
+- Pydantic validation
+- Swagger documentation
+- Pagination
+- Movies filters: substring, year, top
 
 ### Endpoints
+You can see API documentation in swagger using url:
 ```
-    /cinema/...
-    GET - ...
-    POST - ...
+/docs
 ```
 
 ### Usage
@@ -19,9 +20,9 @@ Create venv:
     make venv
 ```
 
-Clear database:
+Create or recreate database
 ```bash
-    make clear-db
+    make recreate
 ```
 
 Run application:
