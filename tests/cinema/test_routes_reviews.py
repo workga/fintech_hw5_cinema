@@ -1,10 +1,9 @@
 import pytest
 
-from app.cinema import cinema
+from app.cinema import crud
 from tests.conftest import set_auth_user
 
 
-# get /movies/{movie_id}/reviews
 @pytest.mark.parametrize(
     ('movie_id', 'count'),
     [
@@ -40,7 +39,6 @@ def test_get_movies_review_movie_not_found(auth_client, movie_id):
     assert response.status_code == 400
 
 
-# post /movies/{movie_id}/reviews
 @pytest.mark.parametrize(
     ('user_id', 'movie_id', 'text'),
     [
@@ -49,7 +47,7 @@ def test_get_movies_review_movie_not_found(auth_client, movie_id):
     ],
 )
 def test_post_movies_reviews_success(app, client, user_id, movie_id, text):
-    user = cinema.get_user_by_id(user_id)
+    user = crud.users.get_user_by_id(user_id)
     set_auth_user(app, user)
 
     response = client.post(
@@ -72,7 +70,7 @@ def test_post_movies_reviews_success(app, client, user_id, movie_id, text):
     ],
 )
 def test_post_movies_reviews_invalid_params(app, client, user_id, movie_id, text):
-    user = cinema.get_user_by_id(user_id)
+    user = crud.users.get_user_by_id(user_id)
     set_auth_user(app, user)
 
     response = client.post(
@@ -94,7 +92,7 @@ def test_post_movies_reviews_invalid_params(app, client, user_id, movie_id, text
     ],
 )
 def test_post_movies_reviews_failed(app, client, user_id, movie_id, text):
-    user = cinema.get_user_by_id(user_id)
+    user = crud.users.get_user_by_id(user_id)
     set_auth_user(app, user)
 
     response = client.post(
@@ -107,7 +105,6 @@ def test_post_movies_reviews_failed(app, client, user_id, movie_id, text):
     assert response.status_code == 400
 
 
-# get /cinema/users/{user_id}/reviews
 @pytest.mark.parametrize(
     ('user_id', 'count'),
     [
@@ -143,7 +140,6 @@ def test_get_users_review_movie_not_found(auth_client, user_id):
     assert response.status_code == 400
 
 
-# get /cinema/movies/{movie_id}/stats
 @pytest.mark.parametrize('movie_id', [1, 5])
 def test_get_movies_stats_success(auth_client, movie_id):
     response = auth_client.get(f'/cinema/movies/{movie_id}/stats')

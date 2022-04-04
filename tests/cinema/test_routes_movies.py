@@ -1,7 +1,6 @@
 import pytest
 
 
-# get /movies
 @pytest.mark.parametrize(
     ('limit', 'last_id'),
     [
@@ -78,7 +77,6 @@ def test_get_movies_invalid_params(auth_client, limit, last_id, substring, year,
     assert response.status_code == 422
 
 
-# post /movies
 @pytest.mark.parametrize(('title', 'year'), [('Real', 2005)])
 def test_post_movies_success(auth_client, title, year):
     response = auth_client.post('/cinema/movies', json={'title': title, 'year': year})

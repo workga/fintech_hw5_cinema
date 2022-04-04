@@ -1,10 +1,9 @@
 import pytest
 
-from app.cinema import cinema
+from app.cinema import crud
 from tests.conftest import set_auth_user
 
 
-# get /movies/{movie_id}/marks
 @pytest.mark.parametrize(
     ('movie_id', 'count'),
     [
@@ -40,7 +39,6 @@ def test_get_movies_mark_movie_not_found(auth_client, movie_id):
     assert response.status_code == 400
 
 
-# post /movies/{movie_id}/marks
 @pytest.mark.parametrize(
     ('user_id', 'movie_id', 'score'),
     [
@@ -49,7 +47,7 @@ def test_get_movies_mark_movie_not_found(auth_client, movie_id):
     ],
 )
 def test_post_movies_marks_success(app, client, user_id, movie_id, score):
-    user = cinema.get_user_by_id(user_id)
+    user = crud.users.get_user_by_id(user_id)
     set_auth_user(app, user)
 
     response = client.post(
@@ -73,7 +71,7 @@ def test_post_movies_marks_success(app, client, user_id, movie_id, score):
     ],
 )
 def test_post_movies_marks_invalid_params(app, client, user_id, movie_id, score):
-    user = cinema.get_user_by_id(user_id)
+    user = crud.users.get_user_by_id(user_id)
     set_auth_user(app, user)
 
     response = client.post(
@@ -95,7 +93,7 @@ def test_post_movies_marks_invalid_params(app, client, user_id, movie_id, score)
     ],
 )
 def test_post_movies_marks_failed(app, client, user_id, movie_id, score):
-    user = cinema.get_user_by_id(user_id)
+    user = crud.users.get_user_by_id(user_id)
     set_auth_user(app, user)
 
     response = client.post(
@@ -108,7 +106,6 @@ def test_post_movies_marks_failed(app, client, user_id, movie_id, score):
     assert response.status_code == 400
 
 
-# get /cinema/users/{user_id}/marks
 @pytest.mark.parametrize(
     ('user_id', 'count'),
     [

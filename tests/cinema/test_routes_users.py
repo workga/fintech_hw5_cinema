@@ -1,7 +1,6 @@
 import pytest
 
 
-# get /users
 @pytest.mark.parametrize(
     ('limit', 'last_id'),
     [
@@ -43,7 +42,6 @@ def test_get_users_invalid_params(auth_client, limit, last_id):
     assert response.status_code == 422
 
 
-# post /users
 @pytest.mark.parametrize(
     ('name', 'login', 'password'),
     [

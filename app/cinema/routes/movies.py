@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from fastapi import Body, Depends, Path, Query, status, APIRouter
 
-from app.cinema import cinema
+from app.cinema import crud
 from app.cinema.auth import auth_user
 from app.cinema.models import Movie
 from app.cinema.pagination import Page, pagination
@@ -25,7 +25,7 @@ def list_movies(
     top: Optional[int] = Query(None, ge=0),
     page: Page = Depends(pagination),
 ) -> List[Movie]:
-    db_movies = cinema.get_movies(page=page, substring=substring, year=year, top=top)
+    db_movies = crud.movies.get_movies(page=page, substring=substring, year=year, top=top)
 
     return db_movies
 
@@ -36,7 +36,7 @@ def list_movies(
     response_model=MovieStats,
 )
 def show_movie_stats(movie_id: int = Path(..., ge=1)) -> Movie:
-    movie = cinema.get_movie_stats(movie_id=movie_id)
+    movie = crud.movies.get_movie_stats(movie_id=movie_id)
 
     return movie
 
@@ -48,6 +48,6 @@ def show_movie_stats(movie_id: int = Path(..., ge=1)) -> Movie:
     status_code=status.HTTP_201_CREATED,
 )
 def create_movie(movie: MovieCreate = Body(...)) -> Movie:
-    db_movie = cinema.create_movie(movie)
+    db_movie = crud.movies.create_movie(movie)
 
     return db_movie

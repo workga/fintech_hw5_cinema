@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app import create_app
-from app.cinema import cinema
+from app.cinema import crud
 from app.cinema.auth import auth_user
 from app.cinema.models import User
 from app.cinema.schemas import MarkCreate, MovieCreate, ReviewCreate, UserCreate
@@ -44,11 +44,6 @@ def auth_client(app, client):
 
 def mock_db_exception(mocker):
     mocker.patch('sqlalchemy.orm.Session', side_effect=DatabaseError)
-    # mocker.patch('sqlalchemy.orm.Session.add', side_effect=DatabaseError)
-    # mocker.patch('sqlalchemy.orm.Query.all', side_effect=DatabaseError)
-    # mocker.patch('sqlalchemy.orm.Query.one', side_effect=DatabaseError)
-    # mocker.patch('sqlalchemy.orm.Query.first', side_effect=DatabaseError)
-    # mocker.patch('sqlalchemy.orm.Query.one_or_none', side_effect=DatabaseError)
 
 
 @pytest.fixture(scope='session', autouse=True, name='data')
@@ -70,13 +65,13 @@ def db(data):
 
 def fill_db(data):
     for u in data['users']:
-        cinema.create_user(u)
+        crud.users.create_user(u)
     for m in data['movies']:
-        cinema.create_movie(m)
+        crud.movies.create_movie(m)
     for r in data['reviews']:
-        cinema.create_review(*r)
+        crud.reviews.create_review(*r)
     for m in data['marks']:
-        cinema.create_mark(*m)
+        crud.marks.create_mark(*m)
 
 
 def models_from_json(data_json):

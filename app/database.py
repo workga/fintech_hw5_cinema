@@ -1,3 +1,4 @@
+from cmath import exp
 from contextlib import contextmanager
 
 from sqlalchemy import create_engine
@@ -25,20 +26,10 @@ def init_db(testing: bool = False) -> Engine:
 
 
 @contextmanager
-def create_session(**kwargs: int) -> Session:
-    session = None
-    try:
-        session = SessionLocal(**kwargs)
+def create_session(expire_on_commit=False) -> Session:
+    with SessionLocal.begin() as session:
+        session.expire_on_commit = expire_on_commit
         yield session
-        session.commit()
-    except DatabaseError as error:
-        get_logger().error(error)
-        if session is not None:
-            session.rollback()
-        raise
-    finally:
-        if session is not None:
-            session.close()
 
 
 def recreate_db(testing: bool = False) -> None:
