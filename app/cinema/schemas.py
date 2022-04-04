@@ -1,6 +1,5 @@
 from typing import Any
 
-# import orjson
 from pydantic import BaseModel, constr, validator
 
 
@@ -8,7 +7,6 @@ class CinemaBaseModel(BaseModel):
     pass
 
 
-# User
 class UserBase(CinemaBaseModel):
     # Because mypy doesn't know about constr type
     login: constr(min_length=1, max_length=50)  # type: ignore
@@ -26,16 +24,15 @@ class UserCreate(UserBase):
     password: constr(min_length=1, max_length=50)  # type: ignore
 
 
-# Movie
 class MovieBase(CinemaBaseModel):
     title: constr(min_length=1, max_length=50)  # type: ignore
     year: int
 
     @validator('year')
-    def year_in_interval(cls: Any, v: int) -> int:
-        if v not in range(1900, 2100):
+    def year_in_interval(cls: Any, year: int) -> int:
+        if year not in range(1900, 2100):
             raise ValueError('Year is incorrect')
-        return v
+        return year
 
 
 class MovieRead(MovieBase):
@@ -57,14 +54,13 @@ class MovieStats(MovieBase):
     rating: float
 
     @validator('rating')
-    def round_rating(cls: Any, v: float) -> float:
-        return round(v, 2)
+    def round_rating(cls: Any, value: float) -> float:
+        return round(value, 2)
 
     class Config:
         orm_mode = True
 
 
-# Review
 class ReviewBase(CinemaBaseModel):
     text: constr(min_length=1)  # type: ignore
 
@@ -81,15 +77,14 @@ class ReviewCreate(ReviewBase):
     pass
 
 
-# Mark
 class MarkBase(CinemaBaseModel):
     score: int
 
     @validator('score')
-    def score_in_interval(cls: Any, v: int) -> int:
-        if v not in range(0, 11):
+    def score_in_interval(cls: Any, value: int) -> int:
+        if value not in range(0, 11):
             raise ValueError('Score is incorrect')
-        return v
+        return value
 
 
 class MarkRead(MarkBase):

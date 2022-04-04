@@ -31,7 +31,6 @@ def handle_db_exception(cinema_func: F) -> F:
 def get_user(user_id: int) -> Row:
     with create_session(expire_on_commit=False) as session:
         db_user = session.execute(select(User).where(User.id == user_id)).one_or_none()
-        print(type(db_user))
         return db_user
 
 

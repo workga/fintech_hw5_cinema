@@ -21,11 +21,11 @@ def pagination(
     return Page(limit=limit, last_id=last_id)
 
 
-def paginated_stmt(stmt: Select, page: Page, ModelClass: T) -> Page:
-    if not hasattr(ModelClass, 'id'):
+def paginated_stmt(stmt: Select, page: Page, model_cls: T) -> Page:
+    if not hasattr(model_cls, 'id'):
         return stmt
     return (
-        stmt.where(getattr(ModelClass, 'id') > page.last_id)
-        .order_by(getattr(ModelClass, 'id'))
+        stmt.where(getattr(model_cls, 'id') > page.last_id)
+        .order_by(getattr(model_cls, 'id'))
         .limit(page.limit)
     )

@@ -26,16 +26,19 @@ def init_db(testing: bool = False) -> Engine:
 
 @contextmanager
 def create_session(**kwargs: int) -> Session:
+    session = None
     try:
         session = SessionLocal(**kwargs)
         yield session
         session.commit()
     except DatabaseError as error:
         get_logger().error(error)
-        session.rollback()
+        if session is not None:
+            session.rollback()
         raise
     finally:
-        session.close()
+        if session is not None:
+            session.close()
 
 
 def recreate_db(testing: bool = False) -> None:
