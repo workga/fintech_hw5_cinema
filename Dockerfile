@@ -13,26 +13,31 @@ ENV PYTHONUNBUFFERED=on
 # set workdir as PYTHONPATH
 ENV PYTHONPATH=/opt/app
 
-ENV POETRY_VERSION=1.1.5
+ENV POETRY_VERSION="1.1.13"
+
+ENV VENV=.venv
+
+
 ARG ENVIRONMENT=production
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && apt-get autoclean && apt-get autoremove \
     && rm -rf /var/lib/apt/lists/* \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*  \
-    && pip install "poetry==$POETRY_VERSION" \
-    && poetry config virtualenvs.create false
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /opt/app
 
-COPY poetry.lock poetry.lock
-COPY pyproject.toml pyproject.toml
+RUN python -m venv $VENV \
+	&& $VENV/bin/python -m pip install --upgrade pip \
+	&& $VENV/bin/python -m pip install "poetry==$POETRY_VERSION"
 
-RUN poetry install $(if test "$ENVIRONMENT" = production; then echo "--no-dev"; fi)
+COPY pyproject.toml ./
+RUN .venv/bin/poetry install $(if test "$ENVIRONMENT" = production; then echo "--no-dev"; fi)
 
+# Copy separately, because we don't want to merge content in one directory
 COPY app app
 COPY Makefile Makefile
 
-ENTRYPOINT []
-CMD ["make", "up"]
+EXPOSE 8000
+ENTRYPOINT ["make", "up"]

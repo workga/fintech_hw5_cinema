@@ -4,22 +4,21 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.engine.row import Row
 
+from app.cinema.crud.utils import handle_db_exception
 from app.cinema.models import Movie
 from app.cinema.pagination import Page, paginated_stmt
-from app.cinema.schemas import MovieCreate
+from app.cinema.schemas.movies import MovieCreate
 from app.database import create_session
-
-from app.cinema.crud.utils import handle_db_exception
-
 
 
 def get_movie(movie_id: int) -> Row:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         db_movie = session.execute(
             select(Movie).where(Movie.id == movie_id)
         ).one_or_none()
 
         return db_movie
+
 
 @handle_db_exception
 def get_movies(
@@ -28,7 +27,7 @@ def get_movies(
     year: Optional[int] = None,
     top: Optional[int] = None,
 ) -> List[Movie]:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         stmt = select(Movie)
         if year is not None:
             stmt = stmt.where(Movie.year == year)
@@ -57,7 +56,7 @@ def get_movie_stats(movie_id: int) -> Movie:
 
 @handle_db_exception
 def create_movie(movie: MovieCreate) -> Movie:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         db_movie = session.execute(
             select(Movie)
             .where(Movie.title == movie.title)

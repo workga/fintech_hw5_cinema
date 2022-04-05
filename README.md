@@ -1,5 +1,6 @@
 # Cinema API
-This is API that allows to create
+This is API for Cinema web application
+
 ### Features
 - Base authentication
 - Pydantic validation
@@ -28,6 +29,16 @@ Create or recreate database
 Run application:
 ```bash
     make up
+```
+
+Build docker image:
+```bash
+make docker-build
+```
+
+Run docker container:
+```bash
+make docker-run
 ```
 
 ### Development

@@ -1,15 +1,12 @@
 from typing import List
 
-from fastapi import Body, Depends, Path, status, APIRouter
+from fastapi import APIRouter, Body, Depends, Path, status
 
-from app.cinema import crud
 from app.cinema.auth import auth_user
+from app.cinema.crud import reviews
 from app.cinema.models import Review, User
 from app.cinema.pagination import Page, pagination
-from app.cinema.schemas import (
-    ReviewCreate,
-    ReviewRead,
-)
+from app.cinema.schemas.reviews import ReviewCreate, ReviewRead
 
 router = APIRouter()
 
@@ -22,7 +19,7 @@ router = APIRouter()
 def list_movie_reviews(
     movie_id: int = Path(..., ge=1), page: Page = Depends(pagination)
 ) -> List[Review]:
-    db_reviews = crud.reviews.get_reviews(page=page, movie_id=movie_id)
+    db_reviews = reviews.get_reviews(page=page, movie_id=movie_id)
 
     return db_reviews
 
@@ -37,6 +34,6 @@ def create_movie_review(
     review: ReviewCreate = Body(...),
     user: User = Depends(auth_user),
 ) -> Review:
-    db_review = crud.reviews.create_review(user.id, movie_id, review)
+    db_review = reviews.create_review(user.id, movie_id, review)
 
     return db_review

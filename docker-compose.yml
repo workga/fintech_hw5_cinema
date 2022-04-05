@@ -1,13 +1,30 @@
 version: '3'
 
 services:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ENVIRONMENT: ${ENVIRONMENT:-development}
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - '.:/opt/app'
+
   app:
+    container_name: cinema_app
     build:
       context: .
       dockerfile: Dockerfile
       args:
-        ENVIRONMENT: ${ENVIRONMENT:-development}
+        ENVIRONMENT: ${ENVIRONMENT:-production}
+    image: cinema_app
+
     ports:
-      - "8000:8000"
-    volumes:
-      - '.:/opt/app'
+      - "8001:8000"
+    # volumes:
+    #   - '.:/opt/app'
+
+    # env_file:
+    #   - ./.env

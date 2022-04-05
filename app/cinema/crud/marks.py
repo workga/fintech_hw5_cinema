@@ -4,21 +4,20 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.sql import func
 
+from app.cinema.crud.movies import get_movie
+from app.cinema.crud.users import get_user
+from app.cinema.crud.utils import handle_db_exception
 from app.cinema.models import Mark
 from app.cinema.pagination import Page, paginated_stmt
-from app.cinema.schemas import MarkCreate
+from app.cinema.schemas.marks import MarkCreate
 from app.database import create_session
 
-
-from app.cinema.crud.utils import handle_db_exception
-from app.cinema.crud.users import get_user
-from app.cinema.crud.movies import get_movie
 
 @handle_db_exception
 def get_marks(
     page: Page = Page(), user_id: Optional[int] = None, movie_id: Optional[int] = None
 ) -> List[Mark]:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         stmt = select(Mark)
 
         if user_id is not None:
@@ -41,7 +40,7 @@ def get_marks(
 
 @handle_db_exception
 def create_mark(user_id: int, movie_id: int, mark: MarkCreate) -> Mark:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         db_movie = get_movie(movie_id)
         if not db_movie:
             raise HTTPException(status_code=400, detail="Movie doesn't exist")

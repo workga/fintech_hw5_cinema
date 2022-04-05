@@ -1,6 +1,7 @@
 import click
 
 from app.database import recreate_db
+from app.logger import init_logger
 
 
 @click.command()
@@ -9,3 +10,9 @@ from app.database import recreate_db
 def cli_handler(recreate: bool, testing: bool) -> None:
     if recreate:
         recreate_db(testing)
+
+
+if __name__ == '__main__':
+    init_logger()
+    # ignore pylint, because it doesn't know about click's parameters
+    cli_handler()  # pylint: disable=no-value-for-parameter

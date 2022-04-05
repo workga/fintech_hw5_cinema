@@ -1,6 +1,15 @@
-DB_URL = 'sqlite:///app.sqlite'
-DB_URL_TESTING = 'sqlite:///app.testing.sqlite'
+from pydantic import BaseSettings
 
 
-LOGGER_NAME = 'app.logger'
-LOGGER_LEVEL = 'DEBUG'
+class AppSettings(BaseSettings):
+    db_url: str
+    db_url_testing: str
+    logger_name: str
+    logger_level: str
+
+    class Config:
+        env_file = 'app/.env'
+        env_file_encoding = 'utf-8'
+
+
+app_settings = AppSettings()

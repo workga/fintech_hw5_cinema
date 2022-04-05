@@ -3,6 +3,9 @@ TESTS = tests
 VENV ?= .venv
 CODE = tests app
 
+HOST = 0.0.0.0
+PORT = 8000
+
 
 .PHONY: help
 help: ## Show this help
@@ -43,13 +46,22 @@ ci:	lint test ## Lint code then run tests
 
 .PHONY: up
 up: ## Run application
-	$(VENV)/bin/uvicorn --reload --factory app:create_app
+	$(VENV)/bin/uvicorn --reload --factory app.app:create_app --host $(HOST) --port $(PORT)
 
 .PHONY: recreate
 recreate: ## Recreate database
-	$(VENV)/bin/python -m app --recreate
+	$(VENV)/bin/python -m app.cli --recreate
 
 
 .PHONY: recreate-tst
 recreate-tst: ## Recreate testing database
-	$(VENV)/bin/python -m app --recreate --testing
+	$(VENV)/bin/python -m app.cli --recreate --testing
+
+
+.PHONY: docker-build
+docker-build: ## Build docker image
+	docker-compose build
+
+.PHONY: docker-run
+docker-run: ## Run docker container
+	docker-compose up

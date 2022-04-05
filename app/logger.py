@@ -1,6 +1,6 @@
 import logging
 
-from app.config import LOGGER_LEVEL, LOGGER_NAME
+from app.config import app_settings
 
 
 def init_logger() -> None:
@@ -12,10 +12,10 @@ def init_logger() -> None:
         )
     )
 
-    logger = logging.getLogger(LOGGER_NAME)
+    logger = logging.getLogger(app_settings.logger_name)
     logger.addHandler(stream_handler)
-    logger.setLevel(LOGGER_LEVEL)
+    logger.setLevel(app_settings.logger_level)
 
 
 def get_logger() -> logging.Logger:
-    return logging.getLogger(LOGGER_NAME)
+    return logging.getLogger(app_settings.logger_name)

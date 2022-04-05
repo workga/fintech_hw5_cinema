@@ -3,21 +3,20 @@ from typing import List, Optional
 from fastapi import HTTPException
 from sqlalchemy import select
 
-
+from app.cinema.crud.movies import get_movie
+from app.cinema.crud.users import get_user
+from app.cinema.crud.utils import handle_db_exception
 from app.cinema.models import Review
 from app.cinema.pagination import Page, paginated_stmt
-from app.cinema.schemas import ReviewCreate
+from app.cinema.schemas.reviews import ReviewCreate
 from app.database import create_session
 
-from app.cinema.crud.utils import handle_db_exception
-from app.cinema.crud.users import get_user
-from app.cinema.crud.movies import get_movie
 
 @handle_db_exception
 def get_reviews(
     page: Page = Page(), user_id: Optional[int] = None, movie_id: Optional[int] = None
 ) -> List[Review]:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         stmt = select(Review)
 
         if user_id is not None:
@@ -41,7 +40,7 @@ def get_reviews(
 
 @handle_db_exception
 def create_review(user_id: int, movie_id: int, review: ReviewCreate) -> Review:
-    with create_session(expire_on_commit=False) as session:
+    with create_session() as session:
         db_movie = get_movie(movie_id)
         if not db_movie:
             raise HTTPException(status_code=400, detail="Movie doesn't exist")
