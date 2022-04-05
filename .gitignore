@@ -115,6 +115,8 @@ celerybeat.pid
 
 # Environments
 .env
+!app/.env
+!app/cinema/.env
 .venv
 env/
 venv/
